@@ -1,0 +1,59 @@
+pharmascan:
+  email: "sebastienlombardi@hotmail.com" # your email address (needed as identifier for NCBI Entrez queries)
+
+  # --- Core agent settings ---
+  chroma_path: "data/chroma"
+  collection: "pubmed_seed"
+  model:       "gpt-4o-mini"
+  embed_model: "text-embedding-3-small"
+  k: 12                 # top-k retrieval from Chroma after reranking
+  tau: 0.66             # confidence threshold to trigger live PubMed fetch
+  max_attempts: 1       # live-retrieval retries
+  live_fetch_n: 25      # how many PubMed records to pull when fetching live
+
+  # --- Retrieval configuration ---
+  retrieval:
+    top_n_for_mean: 5              # how many top results to consider for the mean
+    recency_window_years: 5    # a paper <= this many years old contributes to the recency boost
+    weights:                   # weights for the 3-term confidence blend; should sum ~1.0
+      max: 0.50              # strongest single-hit similarity
+      mean: 0.25             # mean similarity over top_n_for_mean
+      margin: 0.15           # max - mean (separation from the pack)
+      recency: 0.1          # freshness bonus based on most recent year seen
+
+  # --- Scoring configuration ---
+  scoring:
+    # Evidence tier weights: how "strong" each trial tier is on a 0..1 scale.
+    # These do NOT need to sum to 1; they represent relative strength.
+    evidence_weights:
+      phase-3: 1.0
+      phase-2: 0.7
+      phase-1: 0.4
+      preclinical: 0.2
+
+    # Model weights: preference for human > animal > in vitro evidence.
+    model_weights:
+      human: 1.0
+      animal: 0.6
+      in_vitro: 0.3
+
+    # Outcome weights: direction/quality of the observed effect.
+    # Negative value for "harm" penalizes the score.
+    outcome_weights:
+      benefit: 1.0
+      mixed: 0.5
+      no_effect: 0.1
+      harm: -0.5
+
+    # Blend coefficients for the final score.
+    # These should roughly sum to 1.0
+    weights:
+      tier: 0.30        # evidence tier strength
+      quality: 0.25     # model × outcome (study quality proxy)
+      mechanism: 0.20   # presence/coverage of mechanism terms
+      volume: 0.15      # number of unique PMIDs supporting the candidate
+      confidence: 0.10  # LLM extractor confidence
+
+    # Bonus applied when there is human "benefit" evidence and tier ≥ phase-2.
+    bonus:
+      human_benefit_phase2plus: 0.2

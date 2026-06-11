@@ -1,0 +1,50 @@
+# UdaciScan — Python dependencies
+# Versions from project spec (22.2 - Environment setup)
+ 
+# --- Core LLM & embeddings ---
+openai>=1.73.0
+tiktoken>=0.7.0
+ 
+# --- LangChain (project spec) ---
+langchain>=0.2.6
+langchain-openai>=0.1.20
+ 
+# --- Vector store ---
+chromadb>=1.0.4
+ 
+# --- Structured outputs ---
+pydantic>=2.11.3
+ 
+# --- Configuration ---
+pyyaml>=6.0.2
+python-dotenv>=1.0.1
+ 
+# --- Data & ML ---
+numpy
+pandas
+scikit-learn
+ 
+# --- PubMed / Entrez ---
+biopython
+ 
+# --- Utilities ---
+requests
+tqdm
+jinja2
+pypdf
+ 
+# --- Testing ---
+pytest
+
+# For core functionality
+requests
+pandas
+biopython
+beautifulsoup4
+lxml
+pypdf2
+arxiv
+dotenv
+
+# For improved web content extraction
+readability-lxml
